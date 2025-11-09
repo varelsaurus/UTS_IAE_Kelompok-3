@@ -1,0 +1,173 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Bus Service API",
+        "description": "API for managing buses in Public Transportation Tracker",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/buses": {
+            "get": {
+                "summary": "List all buses",
+                "operationId": "f519550ca830b5dcb346e18781ed50b9",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new bus",
+                "operationId": "e1409a5d1e40f031070c6614524fe308",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "route_id",
+                                    "capacity"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "route_id": {
+                                        "type": "integer"
+                                    },
+                                    "capacity": {
+                                        "type": "integer"
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "nullable": true
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/api/buses/{id}": {
+            "get": {
+                "summary": "Get bus by ID",
+                "operationId": "f2ea1487469f8fdc7d606e0e39061786",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update bus by ID",
+                "operationId": "d95d44f0c5371435cef093433327bac8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "route_id",
+                                    "capacity"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string"
+                                    },
+                                    "route_id": {
+                                        "type": "integer"
+                                    },
+                                    "capacity": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete bus by ID",
+                "operationId": "d3f15eaa0486eebb9da9b279f88f8ca2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted"
+                    }
+                }
+            }
+        },
+        "/api/buses/{id}/with-route": {
+            "get": {
+                "summary": "Get bus with route details",
+                "operationId": "5a6b4ea60203e12dc06e4083747e6646",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus with route"
+                    }
+                }
+            }
+        }
+    }
+}

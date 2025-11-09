@@ -13,7 +13,9 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
+    'route_service' => [ 'url' => env('ROUTE_SERVICE_URL', 'http://localhost:
+    8002') ],
+    
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
