@@ -49,9 +49,9 @@
       <thead>
         <tr>
             <th style="width:40%">Rute</th>
-            <th>Jadwal</th>
-            <th style="width:16%; text-align:right;">Headway</th>
-            <th style="width:18%; text-align:right;">Aksi</th>
+            <th style="width:20%">Jadwal</th>
+            <th style="width:20%">Headway</th>
+            <th style="width:20%">Aksi</th>
         </tr>
       </thead>
       <tbody id="body">
@@ -100,12 +100,12 @@ function formatRow(r) {
       </td>
 
       <!-- Kolom Headway -->
-      <td style="text-align:right;">
+      <td style="text-align:left;">
         <span class="badge">${headway}</span>
       </td>
 
       <!-- Kolom Aksi -->
-      <td style="text-align:right;">
+      <td style="text-align:left;">
         <a href="/rute/edit?id=${r.id}" class="btn">✏️ Edit</a>
         <button class="btn btn-danger btn-delete" data-id="${r.id}">🗑 Hapus</button>
       </td>
