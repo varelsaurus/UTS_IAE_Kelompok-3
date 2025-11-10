@@ -10,6 +10,14 @@ use App\Models\halte;
 class HalteController extends Controller
 {
     // GET /api/rute  -> daftar rute ringkas untuk tabel
+    public function daftar($rute_id)
+    {
+        // Query langsung tanpa relasi dulu
+        return halte::where('rute_id', $rute_id)
+            ->orderBy('urutan')
+            ->get();
+    }
+
     public function index()
     {
         return rute::with(['halte' => function($q){ $q->orderBy('urutan'); }])

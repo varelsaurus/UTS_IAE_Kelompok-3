@@ -22,6 +22,7 @@ class RuteHalteSeeder extends Seeder
             'jadwal'      => [
                 'jam_operasional' => 'Senin–Minggu, 04.40–20.30',
                 'rute_teks'       => 'Terminal Leuwipanjang hingga Pengendapan Bus Soreang',
+                'headway_teks'    => 'Setiap 15–20 menit',
                 'catatan'         => null
             ],
         ]);
@@ -53,6 +54,7 @@ class RuteHalteSeeder extends Seeder
             'jadwal'      => [
                 'jam_operasional' => 'Senin–Minggu, 04.30–20.00',
                 'rute_teks'       => 'Kota Baru Parahyangan, Padalarang hingga Alun-alun Kota Bandung',
+                'headway_teks'    => 'Setiap 10–15 menit',
                 'catatan'         => null
             ],
         ]);
@@ -85,6 +87,7 @@ class RuteHalteSeeder extends Seeder
                 'jam_operasional'         => 'Senin–Sabtu, 04.30–20.00',
                 'jam_operasional_minggu'  => 'Minggu, 16.00–20.00',
                 'rute_teks'               => 'Baleendah & Masjid Jami Baitul Huda hingga Mal BEC Jl. Supratman',
+                'headway_teks'            => 'Setiap 10–15 menit',
                 'catatan'                 => null
             ],
         ]);

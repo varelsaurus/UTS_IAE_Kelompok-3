@@ -3,50 +3,73 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\rute;   
-use App\Models\halte;  
+use App\Models\rute;   // model huruf kecil
+use App\Models\halte;  // optional
 
 class RuteController extends Controller
 {
-    // GET /api/rute/{rute_id}/halte -> daftar halte berurutan
-    public function daftar($rute_id)
+    // GET /api/rute  -> daftar rute ringkas untuk tabel
+    public function index()
     {
-        $r = rute::findOrFail($rute_id);
-        return $r->halte()->orderBy('urutan')->get();
+        return rute::with(['halte' => function($q){ $q->orderBy('urutan'); }])
+            ->get()
+            ->map(function ($r) {
+                $j = $r->jadwal ?? [];
+                $head = $j['headway_menit'] ?? null;
+
+                return [
+                    'id'                     => $r->id,
+                    'nama_rute'              => $r->nama_rute,
+                    'titik_awal'             => $r->titik_awal,
+                    'titik_akhir'            => $r->titik_akhir,
+                    'keberangkatan_pertama'  => $j['keberangkatan_pertama'] ?? null,
+                    'keberangkatan_terakhir' => $j['keberangkatan_terakhir'] ?? null,
+                    'jam_operasional'        => $j['jam_operasional'] ?? ($j['jam_operasional_minggu'] ?? null),
+                    'headway'                => $j['headway_teks'] ?? '-',
+                ];
+            });
     }
 
-    // POST /api/rute/{rute_id}/halte -> tambah halte untuk rute tertentu
-    public function tambah(Request $req, $rute_id)
+    // GET /api/rute/{id} -> detail rute (dengan halte)
+    public function tampil($id)
+    {
+        return rute::with('halte')->findOrFail($id);
+    }
+
+    // POST /api/rute
+    public function tambah(Request $req)
     {
         $data = $req->validate([
-            'nama_halte' => 'required|string|min:2',
-            'urutan'     => 'required|integer|min:1',
+            'nama_rute'   => 'required|string|min:3',
+            'titik_awal'  => 'required|string|min:2',
+            'titik_akhir' => 'required|string|min:2',
+            'jadwal'      => 'required|array',
         ]);
 
-        $r = rute::findOrFail($rute_id);
-        // unik (rute_id, urutan) sudah dijaga di migrasi dengan unique index
-        $h = $r->halte()->create($data);
-        return response()->json($h, 201);
+        $obj = rute::create($data);
+        return response()->json($obj, 201);
     }
 
-    // PUT /api/halte/{id} -> ubah halte
+    // PUT /api/rute/{id}
     public function ubah(Request $req, $id)
     {
         $data = $req->validate([
-            'nama_halte' => 'sometimes|required|string|min:2',
-            'urutan'     => 'sometimes|required|integer|min:1',
+            'nama_rute'   => 'sometimes|required|string|min:3',
+            'titik_awal'  => 'sometimes|required|string|min:2',
+            'titik_akhir' => 'sometimes|required|string|min:2',
+            'jadwal'      => 'sometimes|required|array',
         ]);
 
-        $h = halte::findOrFail($id);
-        $h->update($data);
-        return response()->json($h);
+        $obj = rute::findOrFail($id);
+        $obj->update($data);
+        return response()->json($obj);
     }
 
-    // DELETE /api/halte/{id} -> hapus halte
+    // DELETE /api/rute/{id}
     public function hapus($id)
     {
-        $h = halte::findOrFail($id);
-        $h->delete();
-        return response()->json(['pesan' => 'Data halte dihapus']);
+        $obj = rute::findOrFail($id);
+        $obj->delete();
+        return response()->json(['pesan' => 'Data rute dihapus']);
     }
 }
