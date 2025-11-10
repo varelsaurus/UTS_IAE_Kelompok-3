@@ -17,8 +17,16 @@
     th { text-align:left; background:#f8fafc; font-weight:600; }
     .note { color:var(--muted); font-size:13px; }
     .right { text-align:right; white-space:nowrap; }
-    .btn { padding:6px 10px; border:1px solid var(--line); background:#fff; border-radius:8px; cursor:pointer; }
-    .btn:hover { background:#f9fafb; }
+    .btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 12px; border:1px solid #e5e7eb; border-radius:10px;
+    background:#fff; cursor:pointer; text-decoration:none; color:#111;
+    }
+    .btn:hover { background:#f8fafc; }
+    .btn-ghost { border-color:transparent; }
+    .btn-danger { border-color:#fecaca; }
+    .btn-danger:hover { background:#fef2f2; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #e5e7eb; font-size:12px; }
     details { margin-top:6px; }
     .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--line); font-size:12px; }
     footer { margin-top:24px; color:var(--muted); font-size:13px; }
@@ -40,9 +48,10 @@
     <table id="tabel">
       <thead>
         <tr>
-          <th style="width:35%">Rute</th>
-          <th>Jadwal</th>
-          <th class="right" style="width:20%">Selang (Headway)</th>
+            <th style="width:40%">Rute</th>
+            <th>Jadwal</th>
+            <th style="width:16%; text-align:right;">Headway</th>
+            <th style="width:18%; text-align:right;">Aksi</th>
         </tr>
       </thead>
       <tbody id="body">
@@ -81,17 +90,24 @@ function formatRow(r) {
         <div><strong>${r.nama_rute}</strong></div>
         <div class="note">${r.titik_awal ?? ''} → ${r.titik_akhir ?? ''}</div>
         <details>
-          <summary class="btn" data-rute="${r.id}">Lihat halte</summary>
+          <summary class="btn" data-rute="${r.id}">▶ Lihat halte</summary>
           <div id="halte-${r.id}" class="note" style="padding-top:8px;">(klik untuk memuat halte)</div>
         </details>
       </td>
+
       <td>
         <div><strong>Jam operasional:</strong><br>${jamOperasional}</div>
       </td>
-      <td class="right" style="text-align:right;">
+
+      <!-- Kolom Headway -->
+      <td style="text-align:right;">
         <span class="badge">${headway}</span>
-        <a href="/rute/edit?id=${r.id}" class="btn" style="margin-left:10px;">✏️ Edit</a>
-        <button class="btn btn-delete" data-id="${r.id}" style="margin-left:6px;">🗑 Hapus</button>
+      </td>
+
+      <!-- Kolom Aksi -->
+      <td style="text-align:right;">
+        <a href="/rute/edit?id=${r.id}" class="btn">✏️ Edit</a>
+        <button class="btn btn-danger btn-delete" data-id="${r.id}">🗑 Hapus</button>
       </td>
     </tr>
   `;

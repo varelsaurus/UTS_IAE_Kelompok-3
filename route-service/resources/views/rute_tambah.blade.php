@@ -5,17 +5,31 @@
   <title>Tambah Rute</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    :root { --line:#e5e7eb; --muted:#666; }
-    body { font-family: system-ui, Arial, sans-serif; margin:24px; }
-    .wrap { max-width: 880px; margin: 0 auto; }
-    .card { border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff; }
-    .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .row-1 { display:grid; gap:10px; }
-    input, textarea { width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; }
-    .btn { padding:8px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; }
-    .btn:hover { background:#f9fafb; }
-    .note { color:var(--muted); font-size:13px; }
-    .actions { display:flex; gap:8px; align-items:center; margin-top:10px; }
+    :root { --line:#e5e7eb; --muted:#666; --bg:#fff; }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, Arial, sans-serif; margin: 24px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  .card { border:1px solid var(--line); border-radius:16px; padding:20px; background:var(--bg); }
+
+  /* Grid responsif: mobile 1 kolom, >=768px 2 kolom */
+  .grid { display:grid; gap:16px; }
+  @media (min-width: 768px) {
+    .grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  }
+
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .label { font-size:14px; font-weight:600; color:#111; }
+  .hint  { font-size:12px; color:var(--muted); }
+  input, textarea {
+    width:100%; padding:12px 14px; border:1px solid var(--line);
+    border-radius:10px; outline:none; background:#fff;
+  }
+  input:focus, textarea:focus { border-color:#94a3b8; box-shadow:0 0 0 3px #e2e8f0; }
+
+  .actions { display:flex; gap:10px; align-items:center; margin-top:8px; }
+  .btn { padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer; }
+  .btn:hover { background:#f8fafc; }
+  .note { color:var(--muted); font-size:13px; }
   </style>
 </head>
 <body>
@@ -23,24 +37,54 @@
     <p><a class="btn" href="/">← Kembali ke Daftar Rute</a></p>
     <h1>Tambah Rute</h1>
 
-    <form id="formTambahRute" class="card">
-      <div class="row">
-        <input name="nama_rute" placeholder="Nama rute (mis. Koridor 1D Leuwipanjang – Soreang)" required>
-        <input name="jam_operasional" placeholder="Jam operasional (mis. Senin–Minggu, 04.40–20.30)" required>
-        <input name="titik_awal" placeholder="Titik awal (mis. Terminal Leuwipanjang)" required>
-        <input name="titik_akhir" placeholder="Titik akhir (mis. Pengendapan Bus Soreang)" required>
-        <input name="headway_teks" placeholder="Headway (mis. Setiap 15–20 menit)">
-        <input name="keberangkatan_pertama" placeholder="(Opsional) Keberangkatan pertama (mis. 04:40)">
-        <input name="keberangkatan_terakhir" placeholder="(Opsional) Keberangkatan terakhir (mis. 20:30)">
+    <form id="formTambahRute" class="card" novalidate>
+    <div class="grid cols-2">
+      <div class="field">
+        <label class="label">Nama rute <span class="hint">(mis. Koridor 1D Leuwipanjang – Soreang)</span></label>
+        <input name="nama_rute" required>
       </div>
-      <div class="row-1">
-        <textarea name="catatan" placeholder="(Opsional) Catatan jadwal" rows="3"></textarea>
+
+      <div class="field">
+        <label class="label">Jam operasional <span class="hint">(mis. Senin–Minggu, 04.40–20.30)</span></label>
+        <input name="jam_operasional" required>
       </div>
-      <div class="actions">
-        <button class="btn" type="submit">+ Tambah</button>
-        <span id="statusTambah" class="note"></span>
+
+      <div class="field">
+        <label class="label">Titik awal <span class="hint">(mis. Terminal Leuwipanjang)</span></label>
+        <input name="titik_awal" required>
       </div>
-    </form>
+
+      <div class="field">
+        <label class="label">Titik akhir <span class="hint">(mis. Pengendapan Bus Soreang)</span></label>
+        <input name="titik_akhir" required>
+      </div>
+
+      <div class="field">
+        <label class="label">Headway <span class="hint">(mis. Setiap 15–20 menit)</span></label>
+        <input name="headway_teks" placeholder="">
+      </div>
+
+      <div class="field">
+        <label class="label">Keberangkatan pertama <span class="hint">(opsional, mis. 04:40)</span></label>
+        <input name="keberangkatan_pertama" placeholder="">
+      </div>
+
+      <div class="field">
+        <label class="label">Keberangkatan terakhir <span class="hint">(opsional, mis. 20:30)</span></label>
+        <input name="keberangkatan_terakhir" placeholder="">
+      </div>
+    </div>
+
+  <div class="field" style="margin-top:12px;">
+    <label class="label">Catatan jadwal <span class="hint">(opsional)</span></label>
+    <textarea name="catatan" rows="3" placeholder=""></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn" type="submit">+ Tambah</button>
+    <span id="statusTambah" class="note"></span>
+  </div>
+</form>
 
     <p class="note" style="margin-top:8px">
       Data akan dikirim ke <code>/api/rute</code> sebagai JSON.
@@ -88,6 +132,18 @@ elForm.addEventListener('submit', async (e) => {
     console.error(err);
     elStatus.textContent = 'Gagal menambah rute ❌';
     alert('Gagal menambah rute.\nPastikan semua field wajib terisi.\nDetail: ' + err.message);
+  }
+});
+
+document.getElementById('formTambahRute').addEventListener('submit', (e) => {
+  const form = e.currentTarget;
+  if (!form.checkValidity()) {
+    e.preventDefault(); e.stopPropagation();
+    [...form.querySelectorAll(':invalid')].forEach(el => {
+      el.style.borderColor = '#ef4444';
+      el.style.boxShadow = '0 0 0 3px #fee2e2';
+    });
+    return false;
   }
 });
 </script>
