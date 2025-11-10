@@ -25,8 +25,16 @@
     input:focus, textarea:focus { border-color:#94a3b8; box-shadow:0 0 0 3px #e2e8f0; }
 
     .actions { display:flex; gap:10px; align-items:center; margin-top:12px; }
-    .btn { padding:10px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer; }
+    .btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 12px; border:1px solid #e5e7eb; border-radius:10px;
+    background:#fff; cursor:pointer; text-decoration:none; color:#111;
+    }
     .btn:hover { background:#f8fafc; }
+    .btn-ghost { border-color:transparent; }
+    .btn-danger { border-color:#fecaca; }
+    .btn-danger:hover { background:#fef2f2; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #e5e7eb; font-size:12px; }
     .note { color:var(--muted); font-size:13px; }
   </style>
 </head>
@@ -81,7 +89,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn" type="submit" id="btnSimpan">💾 Simpan Perubahan</button>
+        <button class="btn" type="submit" id="btnSimpan">Simpan Perubahan</button>
         <span id="statusEdit" class="note"></span>
       </div>
     </form>

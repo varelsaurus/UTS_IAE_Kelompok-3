@@ -120,29 +120,7 @@ function render(rows) {
   }
   elBody.innerHTML = rows.map(formatRow).join('');
   // Pasang listener untuk setiap summary "Lihat halte"
-  document.querySelectorAll('summary[data-rute]').forEach(sum => {
-    sum.addEventListener('click', async (e) => {
-      const id = sum.getAttribute('data-rute');
-      const box = document.getElementById('halte-'+id);
-      if (box.getAttribute('data-loaded')) return; // sudah pernah muat
-      box.textContent = 'Memuat halte…';
-      try {
-        const halte = await fetchJSON(`${API}/rute/${id}/halte`);
-        if (!halte.length) {
-          box.textContent = 'Belum ada halte';
-        } else {
-          halte.sort((a,b) => (a.urutan ?? 0) - (b.urutan ?? 0));
-
-            box.innerHTML = '<ol style="margin:0; padding-left:16px;">' +
-            halte.map(h => `<li>${h.nama_halte}</li>`).join('') +
-            '</ol>';
-        }
-        box.setAttribute('data-loaded','1');
-      } catch(err) {
-        box.textContent = 'Gagal memuat halte';
-      }
-    });
-  });
+  style="width:20%; text-align:right;"
 }
 
 function filterData(q) {
@@ -196,6 +174,104 @@ document.addEventListener('click', async (e) => {
   } catch (err) {
     console.error(err);
     alert('❌ Gagal menghapus rute\n' + err.message);
+  }
+});
+
+// Tambah/replace halte
+document.addEventListener('submit', async (e) => {
+  const form = e.target.closest('form.form-add-halte');
+  if (!form) return;
+  e.preventDefault();
+
+  const ruteId = form.getAttribute('data-rute');
+  const fd = new FormData(form);
+  const body = { nama_halte: (fd.get('nama_halte')||'').trim(), urutan: Number(fd.get('urutan')||0) };
+  const status = form.querySelector('.add-status');
+  status.textContent = 'Mengirim…';
+
+  try {
+    const res = await fetch(`${API}/rute/${ruteId}/halte`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    status.textContent = '✅ Tersimpan';
+    // reload daftar halte kecilnya
+    const sum = document.querySelector(`summary[data-rute="${ruteId}"]`);
+    const box = document.getElementById('halte-'+ruteId);
+    box.removeAttribute('data-loaded'); sum.click(); sum.click(); // tutup-buka untuk refresh
+    form.reset();
+  } catch(err) {
+    status.textContent = '❌ Gagal';
+    alert('Gagal menambah/replace halte: '+err.message);
+  }
+});
+
+// Klik Edit → inline edit (ubah jadi input)
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.hlt-edit');
+  if (!btn) return;
+  const li = btn.closest('li');
+  const id = btn.getAttribute('data-halte');
+  const ruteId = btn.getAttribute('data-rute');
+  const nama = li.querySelector('.hlt-nama').textContent.trim();
+  const urutan = li.querySelector('.hlt-urutan').textContent.trim();
+  li.innerHTML = `
+    <input class="in-nama" value="${nama}" style="width:55%">
+    <input class="in-urutan" type="number" min="1" value="${urutan}" style="width:100px">
+    <button class="btn hlt-simpan" data-halte="${id}" data-rute="${ruteId}">💾 Simpan</button>
+    <button class="btn hlt-batal"  data-rute="${ruteId}">Batal</button>
+  `;
+});
+
+// Simpan hasil edit
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.hlt-simpan');
+  if (!btn) return;
+  const li = btn.closest('li');
+  const id = btn.getAttribute('data-halte');
+  const ruteId = btn.getAttribute('data-rute');
+  const body = {
+    nama_halte: li.querySelector('.in-nama').value.trim(),
+    urutan:     Number(li.querySelector('.in-urutan').value||0)
+  };
+
+  try {
+    const res = await fetch(`${API}/halte/${id}`, {
+      method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    // refresh daftar halte
+    const sum = document.querySelector(`summary[data-rute="${ruteId}"]`);
+    const box = document.getElementById('halte-'+ruteId);
+    box.removeAttribute('data-loaded'); sum.click(); sum.click();
+  } catch(err) {
+    alert('Gagal menyimpan perubahan halte: '+err.message);
+  }
+});
+
+// Batal edit → reload daftar
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.hlt-batal');
+  if (!btn) return;
+  const ruteId = btn.getAttribute('data-rute');
+  const sum = document.querySelector(`summary[data-rute="${ruteId}"]`);
+  const box = document.getElementById('halte-'+ruteId);
+  box.removeAttribute('data-loaded'); sum.click(); sum.click();
+});
+
+// Hapus halte
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.hlt-hapus');
+  if (!btn) return;
+  const id = btn.getAttribute('data-halte');
+  if (!confirm('Hapus halte ini?')) return;
+  try {
+    const res = await fetch(`${API}/halte/${id}`, { method:'DELETE' });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    // hapus li langsung
+    btn.closest('li')?.remove();
+  } catch(err) {
+    alert('Gagal menghapus halte: '+err.message);
   }
 });
 
