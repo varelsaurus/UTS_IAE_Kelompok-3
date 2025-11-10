@@ -32,6 +32,10 @@
     <button class="btn" id="muatUlang">Muat ulang</button>
   </div>
 
+  <p style="margin:8px 0">
+    <a class="btn" href="/rute/tambah">Tambah Rute</a>
+  </p>
+
   <div class="table-wrap">
     <table id="tabel">
       <thead>
@@ -69,11 +73,10 @@ function formatRow(r) {
       ?? ((r.keberangkatan_pertama && r.keberangkatan_terakhir)
           ? `${r.keberangkatan_pertama} – ${r.keberangkatan_terakhir}`
           : '-');
-
   const headway = r.headway || '-';
 
   return `
-    <tr>
+    <tr id="rute-${r.id}">
       <td>
         <div><strong>${r.nama_rute}</strong></div>
         <div class="note">${r.titik_awal ?? ''} → ${r.titik_akhir ?? ''}</div>
@@ -85,8 +88,10 @@ function formatRow(r) {
       <td>
         <div><strong>Jam operasional:</strong><br>${jamOperasional}</div>
       </td>
-      <td class="right">
+      <td class="right" style="text-align:right;">
         <span class="badge">${headway}</span>
+        <a href="/rute/edit?id=${r.id}" class="btn" style="margin-left:10px;">✏️ Edit</a>
+        <button class="btn btn-delete" data-id="${r.id}" style="margin-left:6px;">🗑 Hapus</button>
       </td>
     </tr>
   `;
@@ -154,6 +159,29 @@ async function loadRute() {
     elBody.innerHTML = `<tr><td colspan="3" class="note">Gagal memuat data (${e.message})</td></tr>`;
   }
 }
+
+// Delegasi klik tombol hapus
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.btn-delete');
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  if (!confirm('Yakin ingin menghapus rute ini?')) return;
+
+  try {
+    const res = await fetch(`${API}/rute/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    // Hapus baris langsung dari tabel tanpa reload
+    const row = document.getElementById(`rute-${id}`);
+    if (row) row.remove();
+
+    alert('✅ Rute berhasil dihapus');
+  } catch (err) {
+    console.error(err);
+    alert('❌ Gagal menghapus rute\n' + err.message);
+  }
+});
 
 // events
 elCari.addEventListener('input', () => render(filterData(elCari.value)));
