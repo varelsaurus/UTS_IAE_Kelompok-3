@@ -55,7 +55,7 @@
         </tr>
       </thead>
       <tbody id="body">
-        <tr><td colspan="3" class="note">Memuat data…</td></tr>
+        <tr><td colspan="4" class="note">Memuat data…</td></tr>
       </tbody>
     </table>
   </div>
@@ -90,8 +90,11 @@ function formatRow(r) {
         <div><strong>${r.nama_rute}</strong></div>
         <div class="note">${r.titik_awal ?? ''} → ${r.titik_akhir ?? ''}</div>
         <details>
-          <summary class="btn" data-rute="${r.id}">▶ Lihat halte</summary>
-          <div id="halte-${r.id}" class="note" style="padding-top:8px;">(klik untuk memuat halte)</div>
+        <summary class="btn lihat-halte" data-rute="${r.id}">▶ Lihat halte</summary>
+        <div id="halte-${r.id}" class="note" style="padding-top:8px;">(klik untuk memuat halte)</div>
+        <div style="margin-top:8px">
+            <a class="btn" href="/rute/edit?id=${r.id}">Kelola halte di halaman Edit →</a>
+        </div>
         </details>
       </td>
 
@@ -99,13 +102,11 @@ function formatRow(r) {
         <div><strong>Jam operasional:</strong><br>${jamOperasional}</div>
       </td>
 
-      <!-- Kolom Headway -->
-      <td style="text-align:left;">
+      <td style="text-align:right;">
         <span class="badge">${headway}</span>
       </td>
 
-      <!-- Kolom Aksi -->
-      <td style="text-align:left;">
+      <td style="text-align:right;">
         <a href="/rute/edit?id=${r.id}" class="btn">✏️ Edit</a>
         <button class="btn btn-danger btn-delete" data-id="${r.id}">🗑 Hapus</button>
       </td>
@@ -115,7 +116,7 @@ function formatRow(r) {
 
 function render(rows) {
   if (!rows.length) {
-    elBody.innerHTML = `<tr><td colspan="3" class="note">Tidak ada data</td></tr>`;
+    elBody.innerHTML = `<tr><td colspan="4" class="note">Tidak ada data</td></tr>`;
     return;
   }
   elBody.innerHTML = rows.map(formatRow).join('');
@@ -274,6 +275,32 @@ document.addEventListener('click', async (e) => {
     alert('Gagal menghapus halte: '+err.message);
   }
 });
+
+async function loadHalte(ruteId) {
+  const box = document.getElementById('halte-'+ruteId);
+  if (!box || box.getAttribute('data-loaded')) return;
+  box.textContent = 'Memuat halte…';
+  try {
+    const halte = await fetchJSON(`${API}/rute/${ruteId}/halte`);
+    halte.sort((a,b)=>(a.urutan??0)-(b.urutan??0));
+    box.innerHTML =
+      '<ol style="margin:0; padding-left:16px;">' +
+      halte.map(h => `<li>${h.nama_halte}</li>`).join('') +
+      '</ol>';
+    box.setAttribute('data-loaded','1');
+  } catch {
+    box.textContent = 'Gagal memuat halte';
+  }
+}
+
+// 1) Klik "Lihat halte" → muat jika belum
+document.addEventListener('click', (e) => {
+  const sum = e.target.closest('summary.lihat-halte');
+  if (!sum) return;
+  const ruteId = sum.getAttribute('data-rute');
+  loadHalte(ruteId);
+});
+
 
 // events
 elCari.addEventListener('input', () => render(filterData(elCari.value)));

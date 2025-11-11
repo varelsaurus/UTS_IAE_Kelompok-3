@@ -44,11 +44,23 @@ class RuteController extends Controller
             'titik_awal'  => 'required|string|min:2',
             'titik_akhir' => 'required|string|min:2',
             'jadwal'      => 'required|array',
+            'halte_daftar'=> 'sometimes|array',
+            'halte_daftar.*' => 'string|min:1',
         ]);
 
-        $obj = rute::create($data);
-        return response()->json($obj, 201);
+        $r = \App\Models\rute::create($data);
+
+        if (!empty($data['halte_daftar'])) {
+            foreach (array_values($data['halte_daftar']) as $i => $nama) {
+                \App\Models\halte::updateOrCreate(
+                    ['rute_id'=>$r->id, 'urutan'=>$i+1],
+                    ['nama_halte'=>$nama]
+                );
+            }
+        }
+        return response()->json($r->load('halte'), 201);
     }
+
 
     // PUT /api/rute/{id}
     public function ubah(Request $req, $id)
@@ -58,11 +70,25 @@ class RuteController extends Controller
             'titik_awal'  => 'sometimes|required|string|min:2',
             'titik_akhir' => 'sometimes|required|string|min:2',
             'jadwal'      => 'sometimes|required|array',
+            'halte_daftar'=> 'sometimes|array',
+            'halte_daftar.*' => 'string|min:1',
         ]);
 
-        $obj = rute::findOrFail($id);
-        $obj->update($data);
-        return response()->json($obj);
+        $r = \App\Models\rute::findOrFail($id);
+        $r->update($data);
+
+        if ($req->has('halte_daftar')) {
+            // reset & isi ulang sesuai urutan array
+            \App\Models\halte::where('rute_id', $r->id)->delete();
+            foreach (array_values($data['halte_daftar']) as $i => $nama) {
+                \App\Models\halte::create([
+                    'rute_id' => $r->id,
+                    'nama_halte' => $nama,
+                    'urutan' => $i + 1,
+                ]);
+            }
+        }
+        return response()->json($r->load('halte'));
     }
 
     // DELETE /api/rute/{id}

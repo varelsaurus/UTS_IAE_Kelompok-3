@@ -83,6 +83,17 @@
         </div>
       </div>
 
+      <div class="card" style="margin-top:16px">
+        <h3 style="margin:0 0 10px">Kelola Halte</h3>
+        <div class="label">Daftar halte (urutan angka)</div>
+        <div id="halteWrap"></div>
+        <div class="actions" style="margin-top:8px">
+          <button type="button" class="btn" id="btnAddHalteEdit">+ Tambah baris halte</button>
+          <button type="button" class="btn" id="btnSaveHalte">💾 Simpan Halte</button>
+          <span id="statusHalte" class="note"></span>
+        </div>
+      </div>
+
       <div class="field" style="margin-top:12px;">
         <label class="label">Catatan jadwal (opsional)</label>
         <textarea name="catatan" rows="3"></textarea>
@@ -171,7 +182,66 @@ elForm.addEventListener('submit', async (e) => {
   }
 });
 
-loadData();
+function halteRow(h=null, idx=null) {
+  const nama = h?.nama_halte ?? '';
+  const urut = h?.urutan ?? (idx ?? 0) + 1;
+  return `
+    <div class="grid cols-2 halte-row" style="align-items:center; margin-bottom:8px">
+      <input class="halte-nama" value="${nama}" placeholder="Nama halte">
+      <input class="halte-urutan" type="number" min="1" value="${urut}" placeholder="Urutan" style="width:140px">
+    </div>
+  `;
+}
+
+async function loadHalteEdit() {
+  const wrap = document.getElementById('halteWrap');
+  wrap.innerHTML = '<div class="note">Memuat halte…</div>';
+  try {
+    const list = await (await fetch(`${API}/rute/${id}/halte`)).json();
+    list.sort((a,b)=>(a.urutan??0)-(b.urutan??0));
+    wrap.innerHTML = list.map((h,i)=>halteRow(h,i)).join('') || halteRow();
+  } catch(e) {
+    wrap.innerHTML = '<div class="note">Gagal memuat halte</div>';
+  }
+}
+
+document.getElementById('btnAddHalteEdit').addEventListener('click', () => {
+  const wrap = document.getElementById('halteWrap');
+  wrap.insertAdjacentHTML('beforeend', halteRow(null, wrap.querySelectorAll('.halte-row').length));
+});
+
+document.getElementById('btnSaveHalte').addEventListener('click', async ()=>{
+  const status = document.getElementById('statusHalte');
+  status.textContent = 'Menyimpan…';
+
+  // kumpulkan & sort by urutan
+  const rows = [...document.querySelectorAll('.halte-row')];
+  const data = rows.map(row => ({
+    nama_halte: row.querySelector('.halte-nama').value.trim(),
+    urutan: Number(row.querySelector('.halte-urutan').value || 0),
+  })).filter(x => x.nama_halte);
+
+  data.sort((a,b)=>a.urutan-b.urutan);
+
+  try {
+    const res = await fetch(`${API}/rute/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ halte_daftar: data.map(x=>x.nama_halte) }) // kirim sebagai array nama, urutan = index+1
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    status.textContent = '✅ Halte tersimpan';
+    await loadHalteEdit(); // reload
+  } catch(err){
+    console.error(err);
+    status.textContent = '❌ Gagal menyimpan halte';
+  }
+});
+
+
+await loadData();
+await loadHalteEdit();
+
 </script>
 </body>
 </html>

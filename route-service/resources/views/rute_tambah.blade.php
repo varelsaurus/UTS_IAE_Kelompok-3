@@ -110,16 +110,29 @@ elForm.addEventListener('submit', async (e) => {
 
   const fd = new FormData(elForm);
   const body = {
-    nama_rute:   (fd.get('nama_rute') || '').trim(),
-    titik_awal:  (fd.get('titik_awal') || '').trim(),
-    titik_akhir: (fd.get('titik_akhir') || '').trim(),
-    jadwal: {
-      jam_operasional:        (fd.get('jam_operasional') || '').trim(),
-      headway_teks:           (fd.get('headway_teks') || '').trim() || null,
-      keberangkatan_pertama:  (fd.get('keberangkatan_pertama') || '').trim() || null,
-      keberangkatan_terakhir: (fd.get('keberangkatan_terakhir') || '').trim() || null,
-      catatan:                (fd.get('catatan') || '').trim() || null,
-    }
+      nama_rute:   (fd.get('nama_rute') || '').trim(),
+      titik_awal:  (fd.get('titik_awal') || '').trim(),
+      titik_akhir: (fd.get('titik_akhir') || '').trim(),
+      jadwal: {
+        jam_operasional:        (fd.get('jam_operasional') || '').trim(),
+        headway_teks:           (fd.get('headway_teks') || '').trim() || null,
+        keberangkatan_pertama:  (fd.get('keberangkatan_pertama') || '').trim() || null,
+        keberangkatan_terakhir: (fd.get('keberangkatan_terakhir') || '').trim() || null,
+        catatan:                (fd.get('catatan') || '').trim() || null,
+      },
+      // NEW: daftar halte opsional
+      halte_daftar: getHalteDaftar(),  // <= array of strings
+    };
+    <div class="card" style="margin-top:16px">
+      <div class="label" style="margin-bottom:8px">Halte (opsional) – satu baris satu halte, urutan dari atas ke bawah</div>
+      <div id="halteList" class="grid">
+        <input class="halte-item" placeholder="Nama halte #1">
+      </div>
+      <div class="actions" style="margin-top:8px">
+        <button type="button" class="btn" id="btnAddHalte">+ Tambah baris halte</button>
+        <button type="button" class="btn" id="btnClearEmpty">Bersihkan baris kosong</button>
+      </div>
+    </div>
   };
 
   try {
@@ -154,6 +167,25 @@ document.getElementById('formTambahRute').addEventListener('submit', (e) => {
     return false;
   }
 });
+
+function getHalteDaftar() {
+  const items = [...document.querySelectorAll('.halte-item')]
+    .map(x => (x.value||'').trim())
+    .filter(Boolean);
+  return items; // ["Grand Hotel Pasundan", "Festival City Link", ...]
+}
+
+document.getElementById('btnAddHalte').addEventListener('click', () => {
+  const list = document.getElementById('halteList');
+  const input = document.createElement('input');
+  input.className = 'halte-item';
+  input.placeholder = `Nama halte #${list.querySelectorAll('.halte-item').length + 1}`;
+  list.appendChild(input);
+});
+document.getElementById('btnClearEmpty').addEventListener('click', () => {
+  document.querySelectorAll('.halte-item').forEach(x => { if (!x.value.trim()) x.remove(); });
+});
+
 </script>
 </body>
 </html>
