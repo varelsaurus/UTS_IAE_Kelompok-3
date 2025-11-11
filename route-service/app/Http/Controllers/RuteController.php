@@ -8,6 +8,18 @@ use App\Models\halte;  // optional
 
 class RuteController extends Controller
 {
+
+    public function daftar($rute_id)
+    {
+        // optional: pastikan rute ada
+        rute::findOrFail($rute_id);
+
+        // ambil halte untuk rute tsb, urut berdasarkan 'urutan'
+        return halte::where('rute_id', $rute_id)
+            ->orderBy('urutan')
+            ->get(['id','rute_id','nama_halte','urutan']);
+    }
+    
     // GET /api/rute  -> daftar rute ringkas untuk tabel
     public function index()
     {

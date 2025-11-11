@@ -93,7 +93,7 @@ function formatRow(r) {
         <summary class="btn lihat-halte" data-rute="${r.id}">▶ Lihat halte</summary>
         <div id="halte-${r.id}" class="note" style="padding-top:8px;">(klik untuk memuat halte)</div>
         <div style="margin-top:8px">
-            <a class="btn" href="/rute/edit?id=${r.id}">Kelola halte di halaman Edit →</a>
+
         </div>
         </details>
       </td>
@@ -277,19 +277,40 @@ document.addEventListener('click', async (e) => {
 });
 
 async function loadHalte(ruteId) {
-  const box = document.getElementById('halte-'+ruteId);
+  const box = document.getElementById('halte-' + ruteId);
   if (!box || box.getAttribute('data-loaded')) return;
+
   box.textContent = 'Memuat halte…';
   try {
     const halte = await fetchJSON(`${API}/rute/${ruteId}/halte`);
+    if (!Array.isArray(halte)) throw new Error('Format tidak valid');
+
     halte.sort((a,b)=>(a.urutan??0)-(b.urutan??0));
-    box.innerHTML =
-      '<ol style="margin:0; padding-left:16px;">' +
-      halte.map(h => `<li>${h.nama_halte}</li>`).join('') +
-      '</ol>';
+    const html = halte.length
+    ? '<ol style="margin:0; padding-left:16px;">'
+        + halte.map(h => `
+          <li style="margin-bottom:4px;">
+            ${h.nama_halte}
+          </li>
+        `).join('')
+        + '</ol>'
+    : '<div class="note">Belum ada halte untuk rute ini.</div>';
+
+
+    box.innerHTML = html + `
+      <div style="margin-top:8px">
+      </div>
+    `;
+    
     box.setAttribute('data-loaded','1');
-  } catch {
-    box.textContent = 'Gagal memuat halte';
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = `
+      <div class="note">Gagal memuat halte (${e.message}).</div>
+      <div style="margin-top:8px">
+      </div>
+    `;
+    // jangan set data-loaded, biar bisa dicoba lagi
   }
 }
 
@@ -297,8 +318,7 @@ async function loadHalte(ruteId) {
 document.addEventListener('click', (e) => {
   const sum = e.target.closest('summary.lihat-halte');
   if (!sum) return;
-  const ruteId = sum.getAttribute('data-rute');
-  loadHalte(ruteId);
+  loadHalte(sum.getAttribute('data-rute'));
 });
 
 
