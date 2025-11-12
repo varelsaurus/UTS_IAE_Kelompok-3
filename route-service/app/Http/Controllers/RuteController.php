@@ -3,11 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\rute;   // model huruf kecil
-use App\Models\halte;  // optional
-
+use App\Models\rute;   
+use App\Models\halte;  
+use OpenApi\Annotations as OA;
 class RuteController extends Controller
 {
+
+    /**
+ * @OA\Get(
+ *   path="/api/rute/{id}/halte",
+ *   tags={"Rute"},
+ *   summary="Daftar halte untuk rute tertentu",
+ *   @OA\Parameter(ref="#/components/parameters/Id"),
+ *   @OA\Response(response=200, description="OK",
+ *     @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Halte"))
+ *   ),
+ *   @OA\Response(response=404, description="Not Found")
+ * )
+ */
 
     public function daftar($rute_id)
     {
@@ -20,7 +33,19 @@ class RuteController extends Controller
             ->get(['id','rute_id','nama_halte','urutan']);
     }
     
-    // GET /api/rute  -> daftar rute ringkas untuk tabel
+    
+    /**
+ * @OA\Get(
+ *   path="/api/rute",
+ *   tags={"Rute"},
+ *   summary="Daftar rute",
+ *   @OA\Response(
+ *     response=200,
+ *     description="OK",
+ *     @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Rute"))
+ *   )
+ * )
+ */
     public function index()
     {
         return rute::with(['halte' => function($q){ $q->orderBy('urutan'); }])
@@ -42,13 +67,32 @@ class RuteController extends Controller
             });
     }
 
-    // GET /api/rute/{id} -> detail rute (dengan halte)
+    /**
+ * @OA\Get(
+ *   path="/api/rute/{id}",
+ *   tags={"Rute"},
+ *   summary="Detail rute (termasuk halte bila dimuat)",
+ *   @OA\Parameter(ref="#/components/parameters/Id"),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/Rute")),
+ *   @OA\Response(response=404, description="Not Found", @OA\JsonContent(ref="#/components/schemas/Error"))
+ * )
+ */
+
     public function tampil($id)
     {
         return rute::with('halte')->findOrFail($id);
     }
 
-    // POST /api/rute
+    /**
+ * @OA\Post(
+ *   path="/api/rute",
+ *   tags={"Rute"},
+ *   summary="Tambah rute",
+ *   @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/RuteCreate")),
+ *   @OA\Response(response=201, description="Created", @OA\JsonContent(ref="#/components/schemas/Rute")),
+ *   @OA\Response(response=400, description="Validation error", @OA\JsonContent(ref="#/components/schemas/Error"))
+ * )
+ */
     public function tambah(Request $req)
     {
         $data = $req->validate([
@@ -74,7 +118,18 @@ class RuteController extends Controller
     }
 
 
-    // PUT /api/rute/{id}
+/**
+ * @OA\Patch(
+ *   path="/api/rute/{id}",
+ *   tags={"Rute"},
+ *   summary="Ubah rute",
+ *   @OA\Parameter(ref="#/components/parameters/Id"),
+ *   @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/RuteUpdate")),
+ *   @OA\Response(response=200, description="OK", @OA\JsonContent(ref="#/components/schemas/Rute")),
+ *   @OA\Response(response=400, description="Validation error"),
+ *   @OA\Response(response=404, description="Not Found")
+ * )
+ */
     public function ubah(Request $req, $id)
     {
         $data = $req->validate([
@@ -103,7 +158,22 @@ class RuteController extends Controller
         return response()->json($r->load('halte'));
     }
 
-    // DELETE /api/rute/{id}
+    /**
+ * @OA\Delete(
+ *   path="/api/rute/{id}",
+ *   tags={"Rute"},
+ *   summary="Hapus rute",
+ *   @OA\Parameter(ref="#/components/parameters/Id"),
+ *   @OA\Response(
+ *     response=200,
+ *     description="Deleted",
+ *     @OA\JsonContent(type="object",
+ *       @OA\Property(property="message", type="string", example="deleted")
+ *     )
+ *   ),
+ *   @OA\Response(response=404, description="Not Found")
+ * )
+ */
     public function hapus($id)
     {
         $obj = rute::findOrFail($id);
