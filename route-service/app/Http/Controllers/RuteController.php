@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\rute;   
-use App\Models\halte;  
+use App\Models\Rute;   
+use App\Models\Halte;  
 use OpenApi\Annotations as OA;
 class RuteController extends Controller
 {

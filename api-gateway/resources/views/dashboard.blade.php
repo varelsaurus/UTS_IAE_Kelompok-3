@@ -17,17 +17,35 @@
   </div>
 
   <script>
-    const API = 'http://localhost:8000/api';
+    // Use a relative API base so the gateway host/port is implicit
+    const API = '/api';
+
+    function safe(v) { return v === undefined || v === null ? '' : v; }
+
     async function load(path, el) {
-      const r = await fetch(API + path);
-      const d = await r.json();
-      document.getElementById(el).innerHTML = d.map(x => {
-        if (x.code) return `<li><strong>${x.code}</strong> – routeId: ${x.route_id}, cap: ${x.capacity}, loc: ${x.lat ?? ''},${x.lng ?? ''}</li>`;
-        return `<li><strong>${x.name}</strong> – ${x.origin} → ${x.destination} (jam: ${(x.schedule || []).join(', ')})</li>`;
-      }).join('');
+      try {
+        const r = await fetch(API + path);
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+        const d = await r.json();
+
+        document.getElementById(el).innerHTML = (d || []).map(x => {
+          // Bus objects contain 'code' (unique bus code)
+          if (x.code) {
+            return `<li><strong>${safe(x.code)}</strong> — route: ${safe(x.route_id)} — cap: ${safe(x.capacity)} — loc: ${safe(x.lat)},${safe(x.lng)}</li>`;
+          }
+
+          // Route objects from route-service
+          return `<li><strong>${safe(x.nama_rute)}</strong> — ${safe(x.titik_awal)} → ${safe(x.titik_akhir)} ` +
+                 `(operasi: ${safe(x.jam_operasional) || '-'}; headway: ${safe(x.headway)})</li>`;
+        }).join('');
+      } catch (err) {
+        document.getElementById(el).innerHTML = `<li style="color:crimson">Error: ${err.message}</li>`;
+      }
     }
+
+    // Load both collections from the API Gateway
     load('/buses', 'buses');
-    load('/routes', 'routes');
+    load('/rute', 'routes');
   </script>
 </body>
 </html>

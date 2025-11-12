@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;   
-use App\Models\halte;  
+use App\Models\Halte;  
 use OpenApi\Annotations as OA;
 
 class HalteController extends Controller
