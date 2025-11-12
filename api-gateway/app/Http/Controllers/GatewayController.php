@@ -28,11 +28,14 @@ class GatewayController extends Controller
             ->withHeaders($resp->headers());
     }
 
+
+    // ---------------- BUS SERVICE ----------------
     public function buses(Request $request)
     {
         return $this->forward($request, config('services.bus.url'));
     }
 
+    // ---------------- ROUTE SERVICE ----------------
     public function routes(Request $request)
     {
         return $this->forward($request, config('services.route.url'));

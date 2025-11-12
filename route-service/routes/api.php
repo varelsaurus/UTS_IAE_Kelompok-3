@@ -11,7 +11,7 @@ Route::put('/rute/{id}',       [RuteController::class, 'ubah']);
 Route::delete('/rute/{id}',    [RuteController::class, 'hapus']);
 
 // Ubah baris ini:
-Route::get('/rute/{rute_id}/halte', [RuteController::class, 'daftar']); // <— di RuteController
+Route::get('/rute/{rute_id}/halte', [RuteController::class, 'daftar']);
 
 // Granular Halte (tetap ada)
 Route::get('/halte',           [HalteController::class, 'index']);
