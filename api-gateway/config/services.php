@@ -37,4 +37,22 @@ return [
     'bus' => [ 'url' => env('BUS_SERVICE_URL', 'http://localhost:8001') ],
     'route' => [ 'url' => env('ROUTE_SERVICE_URL', 'http://localhost:8002') ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Microservices (Bus & Route)
+    |--------------------------------------------------------------------------
+    |
+    | URL service tujuan untuk API Gateway.
+    | Pastikan nilainya sesuai dengan yang ada di .env.
+    |
+    */
+
+    'bus' => [
+        'url' => env('BUS_SERVICE_URL', 'http://localhost:8002'),
+    ],
+
+    'route' => [
+        'url' => env('ROUTE_SERVICE_URL', 'http://localhost:8001'),
+    ],
+
 ];
