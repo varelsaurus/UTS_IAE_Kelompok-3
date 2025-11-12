@@ -1,0 +1,523 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Transport (Rute & Halte)",
+        "description": "Dokumentasi OpenAPI untuk layanan Rute & Halte.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Base URL dari APP_URL"
+        }
+    ],
+    "paths": {
+        "/api/halte": {
+            "get": {
+                "tags": [
+                    "Halte"
+                ],
+                "summary": "Daftar halte (bisa termasuk relasi rute)",
+                "operationId": "8d5e1b57071efd0f3b90b199287e6b57",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Halte"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/halte/{id}": {
+            "get": {
+                "tags": [
+                    "Halte"
+                ],
+                "summary": "Detail halte berdasarkan ID (termasuk relasi rute)",
+                "operationId": "2b89582a70a35bb670d0a6da335e7535",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Halte"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Halte"
+                ],
+                "summary": "Hapus halte",
+                "operationId": "da96fe86d237cc7d9b8c880e978ae0b7",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Halte"
+                ],
+                "summary": "Ubah sebagian data halte",
+                "operationId": "d7639facbd9f678dd2e3e7c59f0be048",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HalteUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Halte"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/rute/{id}/halte": {
+            "get": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Daftar halte untuk rute tertentu",
+                "operationId": "6b51742ec23eaf66e386e6c803f721dd",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Halte"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/rute": {
+            "get": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Daftar rute",
+                "operationId": "9ec5aed27e1e23b45380c59f3596b563",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Rute"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Tambah rute",
+                "operationId": "2088f05c25586313d4a8794349ccdffe",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RuteCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Rute"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/rute/{id}": {
+            "get": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Detail rute (termasuk halte bila dimuat)",
+                "operationId": "74e479c6051f95534978a3e179d37ff8",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Rute"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Hapus rute",
+                "operationId": "bb3124de821aa8a446c342b67ae737f3",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Rute"
+                ],
+                "summary": "Ubah rute",
+                "operationId": "10304487ad17027e3173cc77988be453",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/Id"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RuteUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Rute"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Rute": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "rute_1"
+                    },
+                    "nama_rute": {
+                        "type": "string"
+                    },
+                    "titik_awal": {
+                        "type": "string"
+                    },
+                    "titik_akhir": {
+                        "type": "string"
+                    },
+                    "jadwal": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "05:00"
+                        }
+                    },
+                    "halte": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Halte"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "RuteCreate": {
+                "required": [
+                    "nama_rute",
+                    "titik_awal",
+                    "titik_akhir",
+                    "jadwal"
+                ],
+                "properties": {
+                    "nama_rute": {
+                        "type": "string",
+                        "minLength": 3
+                    },
+                    "titik_awal": {
+                        "type": "string"
+                    },
+                    "titik_akhir": {
+                        "type": "string"
+                    },
+                    "jadwal": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "05:00"
+                        }
+                    },
+                    "halte_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "RuteUpdate": {
+                "properties": {
+                    "nama_rute": {
+                        "type": "string",
+                        "minLength": 3
+                    },
+                    "titik_awal": {
+                        "type": "string"
+                    },
+                    "titik_akhir": {
+                        "type": "string"
+                    },
+                    "jadwal": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "halte_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Halte": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "hlt_1"
+                    },
+                    "nama_halte": {
+                        "type": "string"
+                    },
+                    "urutan": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "rute_id": {
+                        "type": "string",
+                        "example": "rute_1"
+                    }
+                },
+                "type": "object"
+            },
+            "HalteUpdate": {
+                "required": [
+                    "nama_halte"
+                ],
+                "properties": {
+                    "nama_halte": {
+                        "type": "string"
+                    },
+                    "urutan": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                },
+                "type": "object"
+            },
+            "Error": {
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "Id": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Halte",
+            "description": "Halte"
+        },
+        {
+            "name": "Rute",
+            "description": "Rute"
+        }
+    ]
+}
