@@ -1,0 +1,348 @@
+{
+  "info": {
+    "_postman_id": "api-gateway-collection",
+    "name": "Public Transportation Tracker - API Gateway",
+    "description": "Postman collection untuk testing API Gateway Bus dan Rute",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "BUSES",
+      "item": [
+        {
+          "name": "Get All Buses",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses"]
+            }
+          }
+        },
+        {
+          "name": "Get Bus by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res).to.have.property('code');",
+                  "    pm.expect(res).to.have.property('route_id');",
+                  "    pm.expect(res).to.have.property('capacity');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Bus",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201 or 200\", function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('bus_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"B-TEST-{{$timestamp}}\",\n  \"route_id\": 1,\n  \"capacity\": 45,\n  \"lat\": -6.2088,\n  \"lng\": 106.8456\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/buses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses"]
+            }
+          }
+        },
+        {
+          "name": "Update Bus",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"B-UPDATED\",\n  \"route_id\": 1,\n  \"capacity\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/buses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Bus",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ROUTES",
+      "item": [
+        {
+          "name": "Get All Routes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute"]
+            }
+          }
+        },
+        {
+          "name": "Get Route by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response has required fields\", function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res).to.have.property('nama_rute');",
+                  "    pm.expect(res).to.have.property('titik_awal');",
+                  "    pm.expect(res).to.have.property('titik_akhir');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rute/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Route Stops (Halte)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rute/1/halte",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute", "1", "halte"]
+            }
+          }
+        },
+        {
+          "name": "Create Route",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 201 or 200\", function () {",
+                  "    pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_rute\": \"Rute Test {{$timestamp}}\",\n  \"titik_awal\": \"Terminal Awal\",\n  \"titik_akhir\": \"Terminal Akhir\",\n  \"jadwal\": {\n    \"jam_operasional\": \"Senin-Minggu, 05:00-21:00\",\n    \"headway_teks\": \"Setiap 15 menit\"\n  },\n  \"halte_daftar\": [\n    \"Halte 1\",\n    \"Halte 2\",\n    \"Halte 3\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute"]
+            }
+          }
+        },
+        {
+          "name": "Update Route",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_rute\": \"Rute Updated\",\n  \"titik_awal\": \"Terminal Awal Updated\",\n  \"titik_akhir\": \"Terminal Akhir Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/rute/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Route",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/rute/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "rute", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}
