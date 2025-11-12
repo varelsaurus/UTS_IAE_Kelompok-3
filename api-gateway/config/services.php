@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'route_service' => [
+        'url' => env('ROUTE_SERVICE_URL', 'http://127.0.0.1:8001'),
+    ],
+    'bus_service' => [
+        'url' => env('BUS_SERVICE_URL', 'http://127.0.0.1:8002'),
+    ],
 ];
