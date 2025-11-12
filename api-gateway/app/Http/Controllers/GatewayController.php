@@ -9,25 +9,35 @@ class GatewayController extends Controller
 {
     protected function forward(Request $request, string $baseUrl)
     {
-        // hapus prefix /api dari URL gateway
-        $path = preg_replace('#^/api#', '', $request->getRequestUri());
+        // Ambil path dari request (tanpa query)
+        $path = $request->getPathInfo();
 
-        // 🔧 ubah nama agar cocok (karena di route-service pakai /rute)
-        $path = str_replace('/routes', '/rute', $path);
-        
-        $url = rtrim($baseUrl, '/') .'/api'. $path;
-        logger('Forwarding to URL: ' . $url);
+        // Kalau path tidak diawali /api, tambahkan manual
+        if (!str_starts_with($path, '/api')) {
+            $path = '/api' . $path;
+        }
+
+        // Ganti /routes -> /rute biar cocok dengan route-service
+        $path = str_replace('/api/routes', '/api/rute', $path);
+
+        $url = rtrim($baseUrl, '/') . $path;
+
+        logger()->debug('Forwarding to URL: ' . $url);
+
         try {
-            $response = Http::withHeaders($request->headers->all())
-                ->send($request->method(), $url, [
-                    'query'       => $request->query(),
-                    'json'        => $request->isJson() ? $request->json()->all() : null,
-                    'form_params' => $request->isJson() ? null : $request->all(),
-                ]);
+            $options = [
+                'query' => $request->query(),
+                'body'  => $request->getContent(),
+            ];
+
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Accept' => 'application/json',
+            ])->send($request->method(), $url, $options);
 
             return response($response->body(), $response->status())
-                ->withHeaders($response->headers());
+                ->header('Content-Type', $response->header('Content-Type'));
         } catch (\Throwable $e) {
+            logger()->error('Gateway forward error: '.$e->getMessage(), ['url'=>$url]);
             return response()->json([
                 'error' => $e->getMessage(),
                 'target_url' => $url,
@@ -35,11 +45,14 @@ class GatewayController extends Controller
         }
     }
 
+
+    // ---------------- BUS SERVICE ----------------
     public function buses(Request $request)
     {
         return $this->forward($request, config('services.bus_service.url'));
     }
 
+    // ---------------- ROUTE SERVICE ----------------
     public function routes(Request $request)
     {
         return $this->forward($request, config('services.route_service.url'));

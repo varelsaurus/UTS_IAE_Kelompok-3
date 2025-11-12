@@ -2,5 +2,35 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'dashboard'); // resources/views/dashboard.blade.php
-Route::view('/rute', 'rute');
+// ============================
+// 🌐 Halaman Utama (Dashboard)
+// ============================
+Route::get('/', function () {
+    return view('dashboard');
+});
+
+// ============================
+// 🚌 Halaman CRUD Bus
+// ============================
+Route::get('/bus/tambah', function () {
+    return view('bus_tambah');
+});
+
+Route::get('/bus/edit', function () {
+    return view('bus_edit');
+});
+
+// ============================
+// 🚏 Halaman CRUD Rute
+// ============================
+Route::get('/rute', function () {
+    return view('rute');
+});
+
+Route::get('/rute/tambah', function () {
+    return view('rute_tambah');
+});
+
+Route::get('/rute/edit', function () {
+    return view('rute_edit');
+});
