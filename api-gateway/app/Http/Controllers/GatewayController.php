@@ -4,44 +4,37 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log; 
 
 class GatewayController extends Controller
 {
-    protected function forward(Request $request, string $baseUrl)
+    protected function forward(Request $request, string $targetBase)
     {
-        // hapus prefix /api dari URL gateway
-        $path = preg_replace('#^/api#', '', $request->getRequestUri());
+        $path = $request->getRequestUri();
+        $url = rtrim($targetBase, '/') . $path;
 
-        // 🔧 ubah nama agar cocok (karena di route-service pakai /rute)
-        $path = str_replace('/routes', '/rute', $path);
-        
-        $url = rtrim($baseUrl, '/') .'/api'. $path;
-        logger('Forwarding to URL: ' . $url);
-        try {
-            $response = Http::withHeaders($request->headers->all())
-                ->send($request->method(), $url, [
-                    'query'       => $request->query(),
-                    'json'        => $request->isJson() ? $request->json()->all() : null,
-                    'form_params' => $request->isJson() ? null : $request->all(),
-                ]);
+        Log::info("Gateway Forward: URI='{$request->getRequestUri()}', Path='{$path}', URL='{$url}'");
 
-            return response($response->body(), $response->status())
-                ->withHeaders($response->headers());
-        } catch (\Throwable $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-                'target_url' => $url,
-            ], 500);
-        }
+        $resp = Http::withHeaders($request->headers->all())
+            ->send($request->method(), $url, [
+                'query' => $request->query(),
+                'json' => $request->isJson() ? $request->json()->all(): null,
+                'form_params' => $request->isJson() ? null : $request->all(),
+            ]);
+
+        Log::info("Gateway Response: Status={$resp->status()}");
+            
+        return response($resp->body(), $resp->status())
+            ->withHeaders($resp->headers());
     }
 
     public function buses(Request $request)
     {
-        return $this->forward($request, config('services.bus_service.url'));
+        return $this->forward($request, config('services.bus.url'));
     }
 
     public function routes(Request $request)
     {
-        return $this->forward($request, config('services.route_service.url'));
+        return $this->forward($request, config('services.route.url'));
     }
 }
