@@ -10,6 +10,13 @@ Route::get('/', function () {
 });
 
 // ============================
+// 📚 API Documentation (Swagger)
+// ============================
+Route::get('/docs', function () {
+    return view('swagger-docs');
+});
+
+// ============================
 // 🚌 Halaman CRUD Bus
 // ============================
 Route::get('/bus/tambah', function () {
