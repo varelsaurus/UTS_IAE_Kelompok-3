@@ -1,4 +1,4 @@
-# graphql/schema.graphql
+# api-gateway/graphql/schema.graphql
 
 type Query {
     # Ambil semua bus
