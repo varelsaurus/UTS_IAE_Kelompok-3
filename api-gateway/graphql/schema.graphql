@@ -1,11 +1,32 @@
-# api-gateway/graphql/schema.graphql
-
 type Query {
+    # --- BUS ---
     # Ambil semua bus
     buses: [Bus!]! @field(resolver: "App\\GraphQL\\Queries\\BusesResolver")
 
     # Ambil satu bus berdasarkan ID
     bus(id: ID! @eq): Bus @field(resolver: "App\\GraphQL\\Queries\\BusResolver")
+
+    # --- ROUTE (INI YANG TADI ERROR KARENA BELUM ADA) ---
+    # Ambil semua route
+    routes: [Route!]! @field(resolver: "App\\GraphQL\\Queries\\RoutesResolver")
+
+    # Ambil satu route berdasarkan ID
+    route(id: ID! @eq): Route @field(resolver: "App\\GraphQL\\Queries\\RouteResolver")
+}
+
+type Mutation {
+    # --- MUTATION (TAMBAH DATA) ---
+    addBus(
+        code: String!
+        capacity: Int!
+        route_id: Int!
+    ): Bus @field(resolver: "App\\GraphQL\\Mutations\\AddBusMutation")
+
+    addRoute(
+        name: String!
+        origin: String!
+        destination: String!
+    ): Route @field(resolver: "App\\GraphQL\\Mutations\\AddRouteMutation")
 }
 
 type Bus {
@@ -13,7 +34,7 @@ type Bus {
     code: String!
     capacity: Int!
     route_id: Int!
-    # Resolver khusus untuk mengambil data Route milik Bus ini
+    # Relasi: Bus punya satu Route
     route: Route @field(resolver: "App\\GraphQL\\Resolvers\\BusRouteResolver")
 }
 
@@ -22,4 +43,6 @@ type Route {
     name: String!
     origin: String!
     destination: String!
+
+    buses: [Bus!]! @field(resolver: "App\\GraphQL\\Resolvers\\RouteBusesResolver")
 }
