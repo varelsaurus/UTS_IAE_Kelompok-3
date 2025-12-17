@@ -12,16 +12,16 @@ class BusResolver
      */
     public function __invoke($_, array $args)
     {
-        // Ambil ID dari argument GraphQL
+        // Ambil ID dari query GraphQL (bus(id: 1))
         $id = $args['id'];
 
         // Tembak ke Bus Service (REST API) endpoint /api/buses/{id}
-        // Pastikan portnya benar (8001 untuk bus service)
+        // Pastikan URL-nya benar mengarah ke port 8001
         $url = env('BUS_SERVICE_URL', 'http://localhost:8001') . "/api/buses/{$id}";
         
         $response = Http::get($url);
 
-        // Jika gagal/not found, kembalikan null agar GraphQL tidak error sistem
+        // Jika data tidak ditemukan di Service Bus, kembalikan null
         if ($response->failed()) {
             return null;
         }
