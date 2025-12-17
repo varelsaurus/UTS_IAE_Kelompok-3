@@ -1,0 +1,25 @@
+# graphql/schema.graphql
+
+type Query {
+    # Ambil semua bus
+    buses: [Bus!]! @field(resolver: "App\\GraphQL\\Queries\\BusesResolver")
+
+    # Ambil satu bus berdasarkan ID
+    bus(id: ID! @eq): Bus @field(resolver: "App\\GraphQL\\Queries\\BusResolver")
+}
+
+type Bus {
+    id: ID!
+    code: String!
+    capacity: Int!
+    route_id: Int!
+    # Resolver khusus untuk mengambil data Route milik Bus ini
+    route: Route @field(resolver: "App\\GraphQL\\Resolvers\\BusRouteResolver")
+}
+
+type Route {
+    id: ID!
+    name: String!
+    origin: String!
+    destination: String!
+}
