@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # --- SERVICE 1: API GATEWAY ---
+  gateway:
+    build: ./api-gateway  # Pastikan nama folder ini BENAR sesuai di laptopmu
+    ports:
+      - "8000:8000"       # Akses dari luar (Postman) tetap port 8000
+    depends_on:
+      - bus-service
+      - route-service
+    networks:
+      - laravel-network
+
+  # --- SERVICE 2: BUS SERVICE ---
+  bus-service:
+    build: ./bus-service  # Cek nama foldernya, pakai underscore/strip?
+    ports:
+      - "8001:8000"       # Di laptopmu jadi 8001, di dalam docker tetap 8000
+    depends_on:
+      - db
+    networks:
+      - laravel-network
+
+  # --- SERVICE 3: ROUTE SERVICE ---
+  route-service:
+    build: ./route-service # Cek nama foldernya
+    ports:
+      - "8002:8000"       # Di laptopmu jadi 8002, di dalam docker tetap 8000
+    depends_on:
+      - db
+    networks:
+      - laravel-network
+
+  # --- DATABASE (MySQL) ---
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"       # Kita pakai port 3307 biar gak bentrok sama MySQL XAMPP kamu
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: uas_iae_db  # Kita bikin 1 DB gabungan atau pisah nanti diatur
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+# Setup Jaringan Khusus Biar Saling Kenal
+networks:
+  laravel-network:
+    driver: bridge
+
+# Setup Penyimpanan Data Database
+volumes:
+  db-data:
