@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\rute;
-use App\Models\halte;
+use App\Models\Rute;
+use App\Models\Halte;
 
 class RuteHalteSeeder extends Seeder
 {
@@ -14,8 +14,11 @@ class RuteHalteSeeder extends Seeder
      */
     public function run(): void
     {
-       // ========== Koridor 1D: Leuwipanjang – Soreang ==========
-        $r1 = rute::create([
+        // ==========================================================
+        // Koridor 1D: Leuwipanjang – Soreang
+        // ==========================================================
+        // PERBAIKAN: Gunakan Rute (Huruf Besar), bukan rute
+        $r1 = Rute::create([
             'nama_rute'   => 'Koridor 1D Leuwipanjang – Soreang',
             'titik_awal'  => 'Terminal Leuwipanjang',
             'titik_akhir' => 'Pengendapan Bus Soreang',
@@ -38,16 +41,21 @@ class RuteHalteSeeder extends Seeder
             'Geo Dipa Energi',
             'Pengendapan Bus Soreang',
         ];
+
         foreach ($halte1 as $i => $nama) {
-            halte::create([
+            // PERBAIKAN: Gunakan Halte (Huruf Besar)
+            Halte::create([
                 'rute_id'    => $r1->id,
                 'nama_halte' => $nama,
                 'urutan'     => $i + 1,
             ]);
         }
 
-        // ========== Koridor 2: Kota Baru Parahyangan – Alun-alun Bandung ==========
-        $r2 = rute::create([
+        // ==========================================================
+        // Koridor 2: Kota Baru Parahyangan – Alun-alun Bandung
+        // ==========================================================
+        // PERBAIKAN: Gunakan Rute (Huruf Besar)
+        $r2 = Rute::create([
             'nama_rute'   => 'Koridor 2 Kota Baru Parahyangan – Alun-alun Bandung',
             'titik_awal'  => 'Kota Baru Parahyangan, Padalarang',
             'titik_akhir' => 'Alun-alun Kota Bandung',
@@ -70,25 +78,30 @@ class RuteHalteSeeder extends Seeder
             'Lembong',
             'Alun-alun Bandung',
         ];
+
         foreach ($halte2 as $i => $nama) {
-            halte::create([
+            // PERBAIKAN: Gunakan Halte (Huruf Besar)
+            Halte::create([
                 'rute_id'    => $r2->id,
                 'nama_halte' => $nama,
                 'urutan'     => $i + 1,
             ]);
         }
 
-        // ========== Koridor 3: Baleendah – BEC ==========
-        $r3 = rute::create([
+        // ==========================================================
+        // Koridor 3: Baleendah – BEC
+        // ==========================================================
+        // PERBAIKAN: Gunakan Rute (Huruf Besar)
+        $r3 = Rute::create([
             'nama_rute'   => 'Koridor 3 Baleendah – BEC',
             'titik_awal'  => 'Baleendah / Masjid Jami Baitul Huda',
             'titik_akhir' => 'Bandung Electronic Center (BEC) – Jl. Supratman',
             'jadwal'      => [
-                'jam_operasional'         => 'Senin–Sabtu, 04.30–20.00',
-                'jam_operasional_minggu'  => 'Minggu, 16.00–20.00',
-                'rute_teks'               => 'Baleendah & Masjid Jami Baitul Huda hingga Mal BEC Jl. Supratman',
-                'headway_teks'            => 'Setiap 10–15 menit',
-                'catatan'                 => null
+                'jam_operasional'        => 'Senin–Sabtu, 04.30–20.00',
+                'jam_operasional_minggu' => 'Minggu, 16.00–20.00',
+                'rute_teks'              => 'Baleendah & Masjid Jami Baitul Huda hingga Mal BEC Jl. Supratman',
+                'headway_teks'           => 'Setiap 10–15 menit',
+                'catatan'                => null
             ],
         ]);
 
@@ -103,12 +116,14 @@ class RuteHalteSeeder extends Seeder
             'Alun-alun Bandung',
             'BEC (Bandung Electronic Center)',
         ];
+
         foreach ($halte3 as $i => $nama) {
-            halte::create([
+            // PERBAIKAN: Gunakan Halte (Huruf Besar)
+            Halte::create([
                 'rute_id'    => $r3->id,
                 'nama_halte' => $nama,
                 'urutan'     => $i + 1,
             ]);
-        } 
+        }
     }
 }

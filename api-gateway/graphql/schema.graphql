@@ -1,3 +1,6 @@
+"A datetime string with format 'Y-m-d H:i:s', e.g. '2018-05-23 13:43:32'."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
 type Query {
     # --- BUS ---
     # Ambil semua bus
@@ -6,7 +9,7 @@ type Query {
     # Ambil satu bus berdasarkan ID
     bus(id: ID! @eq): Bus @field(resolver: "App\\GraphQL\\Queries\\BusResolver")
 
-    # --- ROUTE (INI YANG TADI ERROR KARENA BELUM ADA) ---
+    # --- ROUTE ---
     # Ambil semua route
     routes: [Route!]! @field(resolver: "App\\GraphQL\\Queries\\RoutesResolver")
 
@@ -16,17 +19,19 @@ type Query {
 
 type Mutation {
     # --- MUTATION (TAMBAH DATA) ---
+    # Menambah Bus Baru
     addBus(
         code: String!
         capacity: Int!
-        route_id: Int!
-    ): Bus @field(resolver: "App\\GraphQL\\Mutations\\AddBusMutation")
+        route_id: ID!
+    ): Bus! @field(resolver: "App\\GraphQL\\Mutations\\AddBusMutation")
 
+    # Menambah Rute Baru
     addRoute(
         name: String!
         origin: String!
         destination: String!
-    ): Route @field(resolver: "App\\GraphQL\\Mutations\\AddRouteMutation")
+    ): Route! @field(resolver: "App\\GraphQL\\Mutations\\AddRouteMutation")
 }
 
 type Bus {
@@ -34,7 +39,8 @@ type Bus {
     code: String!
     capacity: Int!
     route_id: Int!
-    # Relasi: Bus punya satu Route
+    
+    # Relasi: Bus punya satu Route (Resolver Integrasi)
     route: Route @field(resolver: "App\\GraphQL\\Resolvers\\BusRouteResolver")
 }
 
@@ -44,5 +50,6 @@ type Route {
     origin: String!
     destination: String!
 
+    # Relasi: Route punya banyak Bus (Resolver Integrasi)
     buses: [Bus!]! @field(resolver: "App\\GraphQL\\Resolvers\\RouteBusesResolver")
 }

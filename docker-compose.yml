@@ -5,7 +5,9 @@ services:
   gateway:
     build: ./api-gateway  # Pastikan nama folder ini BENAR sesuai di laptopmu
     ports:
-      - "8000:8000"       # Akses dari luar (Postman) tetap port 8000
+      - "8000:8000"
+    volumes:                      # <--- TAMBAHKAN INI
+      - ./api-gateway:/var/www      # Akses dari luar (Postman) tetap port 8000
     depends_on:
       - bus-service
       - route-service
