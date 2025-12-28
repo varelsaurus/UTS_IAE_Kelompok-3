@@ -1,0 +1,28 @@
+"A datetime string with format 'Y-m-d H:i:s'."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    buses: [Bus!]! @all
+    bus(id: ID! @eq): Bus @find
+}
+
+type Mutation {
+    addBus(
+        code: String!
+        capacity: Int!
+        route_id: Int!
+        lat: Float
+        lng: Float
+    ): Bus! @create
+}
+
+type Bus {
+    id: ID!
+    code: String!
+    capacity: Int!
+    route_id: Int!
+    lat: Float
+    lng: Float
+    created_at: DateTime!
+    updated_at: DateTime!
+}

@@ -1,47 +1,53 @@
-"A datetime string with format 'Y-m-d H:i:s', e.g. '2018-05-23 13:43:32'."
+"A datetime string with format 'Y-m-d H:i:s'."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
 type Query {
-    # Ambil semua rute (SELECT * FROM rute)
     rutes: [Rute!]! @all
-
-    # Cari rute by ID
     rute(id: ID! @eq): Rute @find
 }
 
 type Mutation {
-    # Tambah Rute Baru
     createRute(
         name: String! @rename(attribute: "nama_rute")
         origin: String! @rename(attribute: "titik_awal")
         destination: String! @rename(attribute: "titik_akhir")
-        jadwal: String # Opsional karena tipe data di DB kamu text/json
+        # Jika input mutation berupa string JSON, biarkan String. 
+        # Jika ingin input object, perlu buat Input Type terpisah.
+        jadwal: String 
     ): Rute! @create
 }
 
 type Rute {
     id: ID!
-    # Mapping kolom DB (Indo) ke GraphQL (Inggris)
     name: String! @rename(attribute: "nama_rute")
     origin: String! @rename(attribute: "titik_awal")
     destination: String! @rename(attribute: "titik_akhir")
     
-    # Field jadwal di model kamu 'array', di sini kita anggap string dulu biar aman
-    # atau kalau mau JSON bisa pakai scalar JSON
-    
-    # Relasi ke Halte (Sesuai function 'halte()' di Model Rute.php)
+    # --- PERUBAHAN DI SINI ---
+    # Ubah dari String menjadi tipe Jadwal
+    jadwal: Jadwal 
+    # -------------------------
+
     halte: [Halte!]! @hasMany
-    
     created_at: DateTime!
     updated_at: DateTime!
 }
+
+# --- TAMBAHKAN TYPE BARU INI ---
+# Struktur ini dibuat berdasarkan error log yang kamu kirim
+type Jadwal {
+    catatan: String
+    rute_teks: String
+    headway_teks: String
+    jam_operasional: String
+    jam_operasional_minggu: String
+}
+# -------------------------------
 
 type Halte {
     id: ID!
     nama_halte: String!
     urutan: Int!
-    rute_id: Int!
-    
     created_at: DateTime!
     updated_at: DateTime!
 }

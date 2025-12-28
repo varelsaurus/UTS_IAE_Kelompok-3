@@ -2,8 +2,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Halte;
 
-class rute extends Model
+class Rute extends Model
 {
     protected $table = 'rute';
     protected $fillable = ['nama_rute','titik_awal','titik_akhir','jadwal'];

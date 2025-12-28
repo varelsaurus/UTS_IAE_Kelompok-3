@@ -18,7 +18,9 @@ services:
   bus-service:
     build: ./bus-service  # Cek nama foldernya, pakai underscore/strip?
     ports:
-      - "8001:8000"       # Di laptopmu jadi 8001, di dalam docker tetap 8000
+      - "8001:8000"
+    volumes:                      # <--- PASTIKAN INI ADA
+    - ./bus-service:/var/www       # Di laptopmu jadi 8001, di dalam docker tetap 8000
     depends_on:
       - db
     networks:
@@ -28,7 +30,9 @@ services:
   route-service:
     build: ./route-service # Cek nama foldernya
     ports:
-      - "8002:8000"       # Di laptopmu jadi 8002, di dalam docker tetap 8000
+      - "8002:8000"
+    volumes:                      # <--- TAMBAHKAN BAGIAN INI
+      - ./route-service:/var/www       # Di laptopmu jadi 8002, di dalam docker tetap 8000
     depends_on:
       - db
     networks:
