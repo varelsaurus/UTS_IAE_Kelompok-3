@@ -7,14 +7,26 @@ type Query {
 }
 
 type Mutation {
+    # Create
     createRute(
         name: String! @rename(attribute: "nama_rute")
         origin: String! @rename(attribute: "titik_awal")
         destination: String! @rename(attribute: "titik_akhir")
-        # Jika input mutation berupa string JSON, biarkan String. 
-        # Jika ingin input object, perlu buat Input Type terpisah.
         jadwal: String 
     ): Rute! @create
+
+    # Update
+    # Perhatikan: @rename TETAP DIPAKAI disini agar Lighthouse tahu kolom mana yang diedit
+    updateRute(
+        id: ID! @eq
+        name: String @rename(attribute: "nama_rute")
+        origin: String @rename(attribute: "titik_awal")
+        destination: String @rename(attribute: "titik_akhir")
+        jadwal: String
+    ): Rute! @update
+
+    # Delete
+    deleteRute(id: ID! @eq): Rute @delete
 }
 
 type Rute {
@@ -22,19 +34,13 @@ type Rute {
     name: String! @rename(attribute: "nama_rute")
     origin: String! @rename(attribute: "titik_awal")
     destination: String! @rename(attribute: "titik_akhir")
-    
-    # --- PERUBAHAN DI SINI ---
-    # Ubah dari String menjadi tipe Jadwal
+    # Output sebagai Object, Input sebagai String (JSON)
     jadwal: Jadwal 
-    # -------------------------
-
     halte: [Halte!]! @hasMany
     created_at: DateTime!
     updated_at: DateTime!
 }
 
-# --- TAMBAHKAN TYPE BARU INI ---
-# Struktur ini dibuat berdasarkan error log yang kamu kirim
 type Jadwal {
     catatan: String
     rute_teks: String
@@ -42,7 +48,6 @@ type Jadwal {
     jam_operasional: String
     jam_operasional_minggu: String
 }
-# -------------------------------
 
 type Halte {
     id: ID!
