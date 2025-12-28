@@ -15,7 +15,9 @@ Terdiri dari 3 service independen yang berkomunikasi melalui **API Gateway**.
 - [🎯 Overview](#-overview)
 - [🏗️ Arsitektur](#-arsitektur)
 - [🚀 Quick Start](#-quick-start)
-- [📚 Dokumentasi](#-dokumentasi)
+- [� Quick Start with Docker (Recommended)](#-quick-start-with-docker-recommended)
+- [🎮 GraphQL Playground](#-graphql-playground)
+- [�📚 Dokumentasi](#-dokumentasi)
 - [🔗 API Endpoints](#-api-endpoints)
 - [📁 Project Structure](#-project-structure)
 - [⚙️ Teknologi](#-teknologi)
@@ -93,10 +95,15 @@ Terdiri dari 3 service independen yang berkomunikasi melalui **API Gateway**.
 
 ### Prerequisites
 
+**Opsi 1: Manual Setup**
 - PHP 8.2+
 - Composer
 - MySQL 5.7+
 - Node.js 18+ (optional, untuk frontend development)
+
+**Opsi 2: Docker (Recommended)**
+- Docker Desktop
+- Docker Compose
 
 ### Installation
 
@@ -165,7 +172,175 @@ php artisan serve --port=8001
 
 ---
 
-## 📚 Dokumentasi
+## � Quick Start with Docker (Recommended)
+
+### Prerequisites
+
+- Docker Desktop
+- Docker Compose
+
+### Installation with Docker
+
+#### 1. Clone Repository
+
+```bash
+git clone https://github.com/varelsaurus/UTS_IAE_Kelompok-3.git
+cd UTS_IAE_Kelompok-3
+```
+
+#### 2. Jalankan Semua Services
+
+```bash
+# Jalankan semua services dengan Docker Compose
+docker-compose up -d
+
+# Cek status services
+docker-compose ps
+```
+
+#### 3. Setup Database
+
+```bash
+# Migrate database untuk semua services
+docker-compose exec gateway php artisan migrate --force
+docker-compose exec bus-service php artisan migrate --force
+docker-compose exec route-service php artisan migrate --force
+
+# Seed data sample (optional)
+docker-compose exec gateway php artisan db:seed --force
+```
+
+#### 4. Akses Aplikasi
+
+- 🌐 **API Gateway Dashboard**: http://localhost:8000
+- 🚌 **Bus Service**: http://localhost:8001
+- 🛣️ **Route Service**: http://localhost:8002
+- 📚 **API Docs**: http://localhost:8000/docs
+- 📜 **Swagger UI**: http://localhost:8000/api/documentation
+
+### Docker Commands
+
+```bash
+# Stop semua services
+docker-compose down
+
+# Rebuild dan restart
+docker-compose down && docker-compose up --build -d
+
+# Lihat logs
+docker-compose logs -f [service-name]
+
+# Masuk ke container
+docker-compose exec [service-name] bash
+```
+
+---
+
+## 🎮 GraphQL Playground
+
+Setiap service dilengkapi dengan **GraphQL Playground** untuk testing dan development API.
+
+### Akses Playground
+
+| Service | URL | Deskripsi |
+|---------|-----|-----------|
+| **API Gateway** | http://localhost:8000/graphiql | Query rute dan halte |
+| **Bus Service** | http://localhost:8001/graphiql | Query dan mutation bus |
+| **Route Service** | http://localhost:8002/graphiql | Query dan mutation rute |
+
+### Contoh Query
+
+#### Bus Service - Ambil semua bus
+```graphql
+query {
+  buses {
+    id
+    code
+    capacity
+    route_id
+    lat
+    lng
+  }
+}
+```
+
+#### Bus Service - Tambah bus baru
+```graphql
+mutation {
+  addBus(
+    code: "BUS-001"
+    capacity: 50
+    route_id: 1
+    lat: -6.2088
+    lng: 106.8456
+  ) {
+    id
+    code
+    capacity
+  }
+}
+```
+
+#### Route Service - Ambil semua rute
+```graphql
+query {
+  rutes {
+    id
+    name
+    origin
+    destination
+    halte {
+      id
+      nama_halte
+      urutan
+    }
+  }
+}
+```
+
+#### Route Service - Tambah rute baru
+```graphql
+mutation {
+  createRute(
+    name: "Rute Jakarta-Bandung"
+    origin: "Jakarta"
+    destination: "Bandung"
+    jadwal: "{\"catatan\": \"Rute utama\", \"rute_teks\": \"Jakarta - Bandung\"}"
+  ) {
+    id
+    name
+    origin
+    destination
+  }
+}
+```
+
+### Fitur Playground
+
+- **IntelliSense**: Auto-complete untuk query dan mutation
+- **Documentation**: Klik tab "Docs" untuk melihat schema lengkap
+- **Query Variables**: Untuk parameter dinamis
+- **HTTP Headers**: Untuk authentication jika diperlukan
+- **Real-time**: Response langsung dari server
+
+### Schema Overview
+
+#### Bus Service Schema
+- **Queries**: `buses`, `bus(id)`
+- **Mutations**: `addBus`, `updateBus`, `deleteBus`
+- **Types**: `Bus` (id, code, capacity, route_id, lat, lng)
+
+#### Route Service Schema
+- **Queries**: `rutes`, `rute(id)`
+- **Mutations**: `createRute`, `updateRute`, `deleteRute`
+- **Types**: `Rute`, `Halte`, `Jadwal`
+
+#### API Gateway Schema
+- Mirip Route Service tapi sebagai aggregator
+
+---
+
+## �📚 Dokumentasi
 
 ### Service Documentation
 
@@ -369,18 +544,21 @@ Semua requests sudah tersedia dan siap digunakan!
 
 ### API & Documentation
 - **API Gateway**: Laravel
+- **GraphQL**: Lighthouse (NuWave)
+- **GraphQL Playground**: Laragraph Utils + MLL GraphiQL
 - **Documentation**: Swagger/OpenAPI 3.0
 - **UI Library**: L5-Swagger
 
-### Frontend
-- **Framework**: Blade (server-side rendering)
-- **Styling**: CSS3 + Custom Design
-- **JavaScript**: Vanilla (no framework)
+### Containerization
+- **Container Runtime**: Docker
+- **Orchestration**: Docker Compose
+- **Base Images**: PHP 8.2 + Composer
 
 ### Development Tools
 - **Version Control**: Git
-- **API Testing**: Postman
+- **API Testing**: Postman, GraphQL Playground
 - **Package Manager**: Composer
+- **Container Management**: Docker Desktop
 
 ---
 
@@ -388,6 +566,7 @@ Semua requests sudah tersedia dan siap digunakan!
 
 ### `.env` Files
 
+**Untuk Setup Manual:**
 Setiap service memiliki `.env` sendiri. Pastikan:
 
 **api-gateway/.env:**
@@ -408,8 +587,25 @@ DB_DATABASE=rute_db
 DB_HOST=127.0.0.1
 ```
 
+**Untuk Setup Docker:**
+Konfigurasi database otomatis disesuaikan untuk container networking:
+
+```env
+# Semua service
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=uas_iae_db
+DB_USERNAME=root
+DB_PASSWORD=root
+
+# API Gateway
+ROUTE_SERVICE_URL=http://route-service:8000
+BUS_SERVICE_URL=http://bus-service:8000
+```
+
 ### Database Setup
 
+**Untuk Setup Manual:**
 Setiap service memiliki database terpisah:
 
 ```sql
@@ -419,6 +615,9 @@ CREATE DATABASE buses_db;
 -- Route Service
 CREATE DATABASE rute_db;
 ```
+
+**Untuk Setup Docker:**
+Database otomatis dibuat oleh container MySQL dengan nama `uas_iae_db`. Semua service menggunakan database yang sama untuk kemudahan development.
 
 ---
 
