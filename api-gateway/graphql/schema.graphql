@@ -1,39 +1,80 @@
-"A datetime string with format 'Y-m-d H:i:s', e.g. '2018-05-23 13:43:32'."
+"A datetime string with format 'Y-m-d H:i:s'."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
 type Query {
-    # Ambil semua rute (SELECT * FROM rute)
-    rutes: [Rute!]! @all
+    # --- BAGIAN RUTE ---
+    # Ganti @all menjadi field resolver manual
+    rutes: [Rute!]! @field(resolver: "App\\GraphQL\\Queries\\Rutes")
+    
+    # rute by id juga harus dibuatkan resolvernya kalau mau dipakai, 
+    # tapi untuk demo list dulu cukup.
+    # rute(id: ID! @eq): Rute @find 
 
-    # Cari rute by ID
-    rute(id: ID! @eq): Rute @find
+    # --- BAGIAN BUS ---
+    # Ganti @all menjadi field resolver manual
+    buses: [Bus!]! @field(resolver: "App\\GraphQL\\Queries\\Buses")
+    
+    # bus(id: ID! @eq): Bus @find
 }
 
 type Mutation {
-    # Tambah Rute Baru
+    # --- MUTATION RUTE ---
     createRute(
         name: String! @rename(attribute: "nama_rute")
         origin: String! @rename(attribute: "titik_awal")
         destination: String! @rename(attribute: "titik_akhir")
-        jadwal: String # Opsional karena tipe data di DB kamu text/json
+        jadwal: String 
     ): Rute! @create
+
+    # --- MUTATION BUS ---
+    addBus(
+        code: String!
+        capacity: Int!
+        route_id: Int!
+        lat: Float
+        lng: Float
+    ): Bus! @create
 }
+
+# --- TYPE DEFINITIONS ---
 
 type Rute {
     id: ID!
-    # Mapping kolom DB (Indo) ke GraphQL (Inggris)
-    name: String! @rename(attribute: "nama_rute")
-    origin: String! @rename(attribute: "titik_awal")
-    destination: String! @rename(attribute: "titik_akhir")
+    # HAPUS @rename di sini! Karena data yang masuk dari Service Rute key-nya sudah "name"
+    name: String! 
+    origin: String! 
+    destination: String! 
     
-    # Field jadwal di model kamu 'array', di sini kita anggap string dulu biar aman
-    # atau kalau mau JSON bisa pakai scalar JSON
+    # Jadwal tetap seperti ini
+    jadwal: Jadwal 
     
-    # Relasi ke Halte (Sesuai function 'halte()' di Model Rute.php)
-    halte: [Halte!]! @hasMany
+    # Halte juga hapus @hasMany karena di Gateway kita tidak punya Model Halte lokal
+    # Tapi karena output json dari service rute sudah include halte, ini biasanya aman kalau strukturnya pas.
+    # Untuk sementara kita fokus benerin error Rute dulu.
+    halte: [Halte!] 
     
     created_at: DateTime!
     updated_at: DateTime!
+}
+
+type Bus {
+    id: ID!
+    code: String!
+    capacity: Int!
+    route_id: Int!
+    lat: Float
+    lng: Float
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+# Definisi Jadwal (Harus ada supaya type Rute di atas valid)
+type Jadwal {
+    catatan: String
+    rute_teks: String
+    headway_teks: String
+    jam_operasional: String
+    jam_operasional_minggu: String
 }
 
 type Halte {
@@ -41,6 +82,21 @@ type Halte {
     nama_halte: String!
     urutan: Int!
     rute_id: Int!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+# --- DEFINISI BUS (INI JUGA TADI HILANG) ---
+type Bus {
+    id: ID!
+    code: String!
+    capacity: Int!
+    route_id: Int!
+    lat: Float
+    lng: Float
+    
+    # Optional: Relasi balik ke Rute (Magic Gateway)
+    # rute: Rute @belongsTo 
     
     created_at: DateTime!
     updated_at: DateTime!
