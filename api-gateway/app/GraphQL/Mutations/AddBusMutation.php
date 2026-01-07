@@ -3,39 +3,42 @@
 namespace App\GraphQL\Mutations;
 
 use Illuminate\Support\Facades\Http;
-use GraphQL\Error\Error; // Tambahkan ini
+use GraphQL\Error\Error;
 
 class AddBusMutation
 {
     public function __invoke($_, array $args)
     {
-        // Pastikan URL mengarah ke nama service di docker-compose
-        $url = env('BUS_SERVICE_URL', 'http://bus-service:8000') . '/api/buses';
-        
-        try {
-            $response = Http::post($url, [
-                'code' => $args['code'],
-                'capacity' => $args['capacity'],
-                'route_id' => $args['route_id'],
-            ]);
-        } catch (\Exception $e) {
-            throw new Error("Koneksi ke Bus Service Gagal: " . $e->getMessage());
+        // 1. Tembak ke endpoint GRAPHQL service bus (Bukan /api/buses lagi)
+        $url = env('BUS_SERVICE_URL', 'http://bus-service:8000') . '/graphql';
+
+        $response = Http::post($url, [
+            'query' => '
+                mutation($code: String!, $capacity: Int!, $route_id: Int!, $lat: Float, $lng: Float) {
+                    addBus(code: $code, capacity: $capacity, route_id: $route_id, lat: $lat, lng: $lng) {
+                        id
+                        code
+                        capacity
+                        route_id
+                    }
+                }
+            ',
+            'variables' => $args, // Masukkan input dari user langsung ke variables
+        ]);
+
+        // 2. Cek error koneksi
+        if ($response->failed()) {
+            throw new Error("Gagal connect ke Bus Service: " . $response->body());
         }
 
-        if ($response->successful()) {
-            $data = $response->json();
-            $bus = isset($data['data']) ? $data['data'] : $data;
+        $data = $response->json();
 
-            return [
-                'id' => $bus['id'],
-                'code' => $bus['code'],
-                'capacity' => $bus['capacity'],
-                'route_id' => $bus['route_id']
-            ];
+        // 3. Cek error validasi dari GraphQL Service Bus
+        if (isset($data['errors'])) {
+            throw new Error($data['errors'][0]['message']);
         }
 
-        // PERBAIKAN: Jangan return null! Lempar Error supaya ketahuan kenapa gagal.
-        // Ini akan menampilkan pesan error dari Bus Service (misal: "Route ID not found")
-        throw new Error("Gagal membuat Bus: " . $response->body());
+        // 4. Balikin data
+        return $data['data']['addBus'];
     }
 }
